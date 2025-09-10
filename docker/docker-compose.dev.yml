@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  job-hunt-assistant:
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/__pycache__  # Exclude pycache
+    environment:
+      - STREAMLIT_ENV=development
+    command: ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--server.enableCORS=false", "--server.enableXsrfProtection=false", "--server.fileWatcherType=poll"]
+    profiles: []  # Remove production profile restriction
+
+  nginx:
+    profiles:
+      - disabled  # Disable nginx in development

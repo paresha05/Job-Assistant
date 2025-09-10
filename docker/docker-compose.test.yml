@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  job-hunt-assistant:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    ports:
+      - "8501:8501"
+    environment:
+      # Add your API keys here for full testing
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - USAJOBS_API_KEY=${USAJOBS_API_KEY:-}
+      - USAJOBS_USER_AGENT=${USAJOBS_USER_AGENT:-JobHuntAssistant/1.0}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
