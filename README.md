@@ -59,7 +59,7 @@ job-hunt-assistant/
    ./deploy.sh
    ```
 
-4. **Access the application**: http://localhost:8501
+4. **Access the application**: http://yourhost
 
 #### Docker Commands
 ```bash
@@ -212,4 +212,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For questions or issues, please open an issue on GitHub or contact [pareshauchdadiya05@gmail.com](mailto:pareshauchdadiya05@gmail.com).
+For questions or issues, please open an issue on GitHub 
