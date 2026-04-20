@@ -1,42 +1,8 @@
 import os
 from crewai import Agent, Task
-from utils.config import get_available_llm_config
+from utils.config import get_llm_string
 
-# Initialize LLM with error handling and flexible provider support
-def get_llm():
-    """Initialize LLM based on available API keys"""
-    try:
-        provider, api_key, model_name = get_available_llm_config()
-        
-        if provider == "openai":
-            from langchain_openai import ChatOpenAI
-            return ChatOpenAI(
-                model=model_name,
-                temperature=0.2,
-                openai_api_key=api_key
-            )
-        elif provider == "anthropic":
-            from langchain_anthropic import ChatAnthropic
-            return ChatAnthropic(
-                model=model_name,
-                temperature=0.2,
-                anthropic_api_key=api_key
-            )
-        elif provider == "gemini":
-            from langchain_google_genai import ChatGoogleGenerativeAI
-            return ChatGoogleGenerativeAI(
-                model="gemini-1.5-flash",
-                temperature=0.2,
-                google_api_key=api_key
-            )
-        else:
-            raise ValueError(f"Unsupported LLM provider: {provider}")
-            
-    except Exception as e:
-        raise RuntimeError(f"Failed to initialize LLM: {e}")
-
-# Initialize LLM
-llm = get_llm()
+llm = get_llm_string()
 
 def get_jd_analyst_agent():
     """
