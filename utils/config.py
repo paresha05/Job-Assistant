@@ -9,9 +9,12 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+CEREBRAS_API_KEY = os.getenv("CEREBRAS_API_KEY")
 
 def get_available_llm_config():
-    if GROQ_API_KEY:
+    if CEREBRAS_API_KEY:
+        return ("cerebras", CEREBRAS_API_KEY, "llama-3.3-70b")
+    elif GROQ_API_KEY:
         return ("groq", GROQ_API_KEY, "llama-3.3-70b-versatile")
     elif OPENAI_API_KEY:
         return ("openai", OPENAI_API_KEY, "gpt-3.5-turbo")
@@ -26,9 +29,10 @@ def get_llm_string():
     """Return a crewai.LLM instance for use with CrewAI v1.x agents."""
     from crewai.llm import LLM
     provider, api_key, model = get_available_llm_config()
-    key_map = {"groq": "GROQ_API_KEY", "openai": "OPENAI_API_KEY",
+    key_map = {"cerebras": "CEREBRAS_API_KEY", "groq": "GROQ_API_KEY", "openai": "OPENAI_API_KEY",
                "anthropic": "ANTHROPIC_API_KEY", "gemini": "GEMINI_API_KEY"}
-    prefix = {"groq": "groq/", "openai": "", "anthropic": "anthropic/", "gemini": "gemini/"}
+    prefix = {"cerebras": "cerebras/", "groq": "groq/", "openai": "",
+              "anthropic": "anthropic/", "gemini": "gemini/"}
     os.environ[key_map[provider]] = api_key
     return LLM(model=f"{prefix[provider]}{model}")
 
