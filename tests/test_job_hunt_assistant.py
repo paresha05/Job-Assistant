@@ -18,6 +18,7 @@ class TestUSAJobsAPI(unittest.TestCase):
         self.test_keyword = "business analyst"
         self.test_location = "New York"
     
+    @patch('usajobs_api.config.USAJOBS_USER_AGENT', 'test@example.com')
     @patch('usajobs_api.requests.get')
     def test_fetch_usajobs_success(self, mock_get):
         """Test successful job fetch from USAJobs API"""
@@ -63,6 +64,7 @@ class TestUSAJobsAPI(unittest.TestCase):
         with self.assertRaisesRegex(USAJobsAPIError, "USAJOBS_API_KEY"):
             fetch_usajobs(self.test_keyword, self.test_location)
 
+    @patch('usajobs_api.config.USAJOBS_USER_AGENT', 'test@example.com')
     @patch('usajobs_api.config.USAJOBS_API_KEY', 'bad-key')
     @patch('usajobs_api.requests.get')
     def test_fetch_usajobs_unauthorized(self, mock_get):
@@ -180,8 +182,11 @@ class TestConfigValidation(unittest.TestCase):
         """Test that config validation works"""
         # This test will fail if environment variables are not set
         try:
-            from utils.config import USAJOBS_API_KEY, CEREBRAS_API_KEY
+            from utils.config import USAJOBS_API_KEY, USAJOBS_USER_AGENT, CEREBRAS_API_KEY
+            if not all([USAJOBS_API_KEY, USAJOBS_USER_AGENT, CEREBRAS_API_KEY]):
+                self.skipTest("Environment variables not fully configured")
             self.assertIsNotNone(USAJOBS_API_KEY)
+            self.assertIsNotNone(USAJOBS_USER_AGENT)
             self.assertIsNotNone(CEREBRAS_API_KEY)
         except ValueError as e:
             self.skipTest(f"Environment variables not configured: {e}")

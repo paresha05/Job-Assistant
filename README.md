@@ -101,6 +101,7 @@ docker-compose build --no-cache
    Create a `.env` file in the root directory:
    ```env
    USAJOBS_API_KEY=your_usajobs_api_key
+   USAJOBS_USER_AGENT=email_used_for_usajobs_api_key
    CEREBRAS_API_KEY=your_cerebras_api_key
    ```
    For Docker/production, keep this exact `KEY=value` format with no spaces around `=`.
@@ -110,7 +111,8 @@ docker-compose build --no-cache
 ### USAJobs API Key
 1. Visit [USAJobs API](https://developer.usajobs.gov/APIRequest/Index)
 2. Request an API key
-3. Add it to your `.env` file
+3. Add the key to your `.env` file as `USAJOBS_API_KEY`.
+4. Add the email used to request the key as `USAJOBS_USER_AGENT`.
 
 ### Cerebras API Key
 1. Create a Cerebras API key from your Cerebras account.
@@ -161,6 +163,7 @@ The application is containerized with the following components:
 
 ### Environment Variables
 - `USAJOBS_API_KEY`: Your USAJobs.gov API key
+- `USAJOBS_USER_AGENT`: Email used to request your USAJobs.gov API key
 - `CEREBRAS_API_KEY`: Your Cerebras API key
 
 ### Ports
@@ -173,6 +176,7 @@ The application is containerized with the following components:
 The system uses environment variables for configuration:
 
 - `USAJOBS_API_KEY`: Your USAJobs.gov API key
+- `USAJOBS_USER_AGENT`: Email used to request your USAJobs.gov API key
 - `CEREBRAS_API_KEY`: Your Cerebras API key
 
 ## Output Files
