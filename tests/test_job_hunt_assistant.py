@@ -78,6 +78,17 @@ class TestUSAJobsAPI(unittest.TestCase):
         with self.assertRaisesRegex(USAJobsAPIError, "USAJOBS_API_KEY"):
             fetch_usajobs(self.test_keyword, self.test_location)
 
+    @patch('usajobs_api.config.USAJOBS_API_KEY', 'USAJOBS_API_KEY="test-key"')
+    @patch('usajobs_api.config.USAJOBS_USER_AGENT', 'USAJOBS_USER_AGENT="test@example.com"')
+    def test_usajobs_headers_clean_pasted_env_lines(self):
+        """Test Railway-style pasted env lines are cleaned before use"""
+        from usajobs_api import _get_usajobs_headers
+
+        headers = _get_usajobs_headers()
+
+        self.assertEqual(headers["Authorization-Key"], "test-key")
+        self.assertEqual(headers["User-Agent"], "test@example.com")
+
 
 class TestTracking(unittest.TestCase):
     """Test cases for application tracking functionality"""

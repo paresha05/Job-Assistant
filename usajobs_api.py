@@ -19,15 +19,19 @@ class USAJobsAPIError(RuntimeError):
     """Raised when USAJobs cannot be searched because of API/config failures."""
 
 
-def _clean_env_value(value):
+def _clean_env_value(value, variable_name=None):
     if value is None:
         return ""
-    return str(value).strip().strip('"').strip("'")
+
+    cleaned = str(value).strip()
+    if variable_name and cleaned.startswith(f"{variable_name}="):
+        cleaned = cleaned.split("=", 1)[1].strip()
+    return cleaned.strip('"').strip("'")
 
 
 def _get_usajobs_headers():
-    api_key = _clean_env_value(config.USAJOBS_API_KEY)
-    user_agent = _clean_env_value(config.USAJOBS_USER_AGENT)
+    api_key = _clean_env_value(config.USAJOBS_API_KEY, "USAJOBS_API_KEY")
+    user_agent = _clean_env_value(config.USAJOBS_USER_AGENT, "USAJOBS_USER_AGENT")
 
     if not api_key:
         raise USAJobsAPIError(
@@ -174,7 +178,8 @@ def fetch_usajobs(keyword, location="remote", results_per_page=5):
         logger.error(f"HTTP error occurred while fetching USAJobs: {e}")
         if status_code in (401, 403):
             raise USAJobsAPIError(
-                "USAJobs rejected the request. Check that USAJOBS_API_KEY is set correctly in production."
+                "USAJobs rejected the request. Check that USAJOBS_API_KEY is the raw API key "
+                "and USAJOBS_USER_AGENT is the email address used to request that key."
             ) from e
         raise USAJobsAPIError(f"USAJobs API returned HTTP {status_code}.") from e
     except requests.exceptions.RequestException as e:

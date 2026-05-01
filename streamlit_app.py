@@ -12,8 +12,30 @@ logger = logging.getLogger(__name__)
 
 st.set_page_config(
     page_title="AI Job Assistant",
-    layout="centered",
-    page_icon="🤖"
+    layout="centered"    
+)
+
+st.markdown(
+    """
+    <style>
+        #MainMenu,
+        header,
+        footer,
+        [data-testid="stDecoration"],
+        [data-testid="stStatusWidget"],
+        [data-testid="stToolbar"],
+        [data-testid="stDeployButton"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+        }
+
+        .block-container {
+            padding-top: 2rem;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 st.title(" AI Job Assistant")
