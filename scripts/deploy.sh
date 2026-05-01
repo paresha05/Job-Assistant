@@ -8,9 +8,18 @@ if [ ! -f .env ]; then
     echo "❌ .env file not found!"
     echo "Please create a .env file with your API keys:"
     echo "  USAJOBS_API_KEY=your_key_here"
-    echo "  GEMINI_API_KEY=your_key_here"
+    echo "  CEREBRAS_API_KEY=your_key_here"
     echo ""
     echo "You can copy .env.template to .env and fill in your keys."
+    exit 1
+fi
+
+if ! grep -q "USAJOBS_API_KEY[[:space:]]*=[[:space:]]*.*[^[:space:]]" .env || \
+   ! grep -q "CEREBRAS_API_KEY[[:space:]]*=[[:space:]]*.*[^[:space:]]" .env; then
+    echo "❌ API keys not properly configured in .env file"
+    echo "Required:"
+    echo "  USAJOBS_API_KEY=your_key_here"
+    echo "  CEREBRAS_API_KEY=your_key_here"
     exit 1
 fi
 

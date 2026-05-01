@@ -55,6 +55,29 @@ class TestUSAJobsAPI(unittest.TestCase):
         self.assertEqual(result, [])
         mock_get.assert_not_called()
 
+    @patch('usajobs_api.config.USAJOBS_API_KEY', '')
+    def test_fetch_usajobs_missing_api_key(self):
+        """Test missing USAJobs API key produces a clear error"""
+        from usajobs_api import USAJobsAPIError, fetch_usajobs
+
+        with self.assertRaisesRegex(USAJobsAPIError, "USAJOBS_API_KEY"):
+            fetch_usajobs(self.test_keyword, self.test_location)
+
+    @patch('usajobs_api.config.USAJOBS_API_KEY', 'bad-key')
+    @patch('usajobs_api.requests.get')
+    def test_fetch_usajobs_unauthorized(self, mock_get):
+        """Test USAJobs auth errors are not reported as empty results"""
+        from requests import HTTPError
+        from usajobs_api import USAJobsAPIError, fetch_usajobs
+
+        mock_response = MagicMock()
+        mock_response.status_code = 403
+        mock_response.raise_for_status.side_effect = HTTPError(response=mock_response)
+        mock_get.return_value = mock_response
+
+        with self.assertRaisesRegex(USAJobsAPIError, "USAJOBS_API_KEY"):
+            fetch_usajobs(self.test_keyword, self.test_location)
+
 
 class TestTracking(unittest.TestCase):
     """Test cases for application tracking functionality"""
@@ -146,9 +169,9 @@ class TestConfigValidation(unittest.TestCase):
         """Test that config validation works"""
         # This test will fail if environment variables are not set
         try:
-            from utils.config import USAJOBS_API_KEY, GEMINI_API_KEY
+            from utils.config import USAJOBS_API_KEY, CEREBRAS_API_KEY
             self.assertIsNotNone(USAJOBS_API_KEY)
-            self.assertIsNotNone(GEMINI_API_KEY)
+            self.assertIsNotNone(CEREBRAS_API_KEY)
         except ValueError as e:
             self.skipTest(f"Environment variables not configured: {e}")
 

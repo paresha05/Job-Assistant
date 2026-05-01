@@ -101,8 +101,9 @@ docker-compose build --no-cache
    Create a `.env` file in the root directory:
    ```env
    USAJOBS_API_KEY=your_usajobs_api_key
-   GEMINI_API_KEY=your_google_gemini_api_key
+   CEREBRAS_API_KEY=your_cerebras_api_key
    ```
+   For Docker/production, keep this exact `KEY=value` format with no spaces around `=`.
 
 ## Getting API Keys
 
@@ -111,10 +112,9 @@ docker-compose build --no-cache
 2. Request an API key
 3. Add it to your `.env` file
 
-### Google Gemini API Key
-1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Create a new API key
-3. Add it to your `.env` file
+### Cerebras API Key
+1. Create a Cerebras API key from your Cerebras account.
+2. Add it to your `.env` file as `CEREBRAS_API_KEY`.
 
 ## Usage
 
@@ -161,7 +161,7 @@ The application is containerized with the following components:
 
 ### Environment Variables
 - `USAJOBS_API_KEY`: Your USAJobs.gov API key
-- `GEMINI_API_KEY`: Your Google Gemini API key
+- `CEREBRAS_API_KEY`: Your Cerebras API key
 
 ### Ports
 - **8501**: Streamlit application (development)
@@ -173,7 +173,7 @@ The application is containerized with the following components:
 The system uses environment variables for configuration:
 
 - `USAJOBS_API_KEY`: Your USAJobs.gov API key
-- `GEMINI_API_KEY`: Your Google Gemini API key
+- `CEREBRAS_API_KEY`: Your Cerebras API key
 
 ## Output Files
 

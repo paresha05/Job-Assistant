@@ -5,6 +5,7 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)),
 
 # API Keys
 USAJOBS_API_KEY = os.getenv("USAJOBS_API_KEY")
+USAJOBS_USER_AGENT = os.getenv("USAJOBS_USER_AGENT", "pareshauchdadiya05@gmail.com")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -23,7 +24,9 @@ def get_available_llm_config():
     elif GEMINI_API_KEY:
         return ("gemini", GEMINI_API_KEY, "gemini-1.5-flash")
     else:
-        raise ValueError("No LLM API key found. Please set GROQ_API_KEY or another provider key.")
+        raise ValueError(
+            "No LLM API key found. Please set CEREBRAS_API_KEY, or another supported provider key."
+        )
 
 def get_llm_string():
     """Return a crewai.LLM instance for use with CrewAI v1.x agents."""

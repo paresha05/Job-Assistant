@@ -1,7 +1,7 @@
 import streamlit as st
 import logging
 from orchestrator import run_pipeline
-from usajobs_api import fetch_usajobs
+from usajobs_api import USAJobsAPIError, fetch_usajobs
 from utils.tracking import get_applications_summary
 from utils.resume_parser import parse_resume, check_resume_relevance
 from utils.config import get_llm_string
@@ -95,6 +95,9 @@ if st.button("Search Jobs", disabled=not search_ready):
                 st.session_state["jobs"] = job_posts
                 st.session_state["resume_text"] = resume_text
                 st.success(f"Found {len(job_posts)} job postings! Select the ones you'd like to apply for.")
+        except USAJobsAPIError as e:
+            st.error(f"USAJobs search error: {str(e)}")
+            logger.error(f"USAJobs search error: {e}")
         except Exception as e:
             st.error(f"Error searching for jobs: {str(e)}")
             logger.error(f"Job search error: {e}")
@@ -193,6 +196,6 @@ if "jobs" in st.session_state:
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center; color: #666;'>
-<small>AI Job Assistant - Powered by CrewAI and Groq</small>
+<small>AI Job Assistant - Powered by CrewAI and Cerebras</small>
 </div>
 """, unsafe_allow_html=True)

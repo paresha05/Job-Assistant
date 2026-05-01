@@ -1,7 +1,7 @@
 import re
 import requests
 import logging
-from utils.config import USAJOBS_API_KEY
+from utils import config
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -13,6 +13,36 @@ _STOP_WORDS = {
     "at", "by", "on", "is", "as", "be", "it", "its", "are", "was",
     "were", "this", "that", "from", "has", "have", "not", "but"
 }
+
+
+class USAJobsAPIError(RuntimeError):
+    """Raised when USAJobs cannot be searched because of API/config failures."""
+
+
+def _clean_env_value(value):
+    if value is None:
+        return ""
+    return str(value).strip().strip('"').strip("'")
+
+
+def _get_usajobs_headers():
+    api_key = _clean_env_value(config.USAJOBS_API_KEY)
+    user_agent = _clean_env_value(config.USAJOBS_USER_AGENT)
+
+    if not api_key:
+        raise USAJobsAPIError(
+            "USAJOBS_API_KEY is not set in the production environment."
+        )
+    if not user_agent:
+        raise USAJobsAPIError(
+            "USAJOBS_USER_AGENT is not set. Use an email address or app identifier."
+        )
+
+    return {
+        "Host": "data.usajobs.gov",
+        "User-Agent": user_agent,
+        "Authorization-Key": api_key,
+    }
 
 
 def _score_job(job_item, keywords):
@@ -75,11 +105,7 @@ def fetch_usajobs(keyword, location="remote", results_per_page=5):
     if location.strip().lower() in _remote_aliases:
         location = "Anywhere in the US"
 
-    headers = {
-        'Host': 'data.usajobs.gov',
-        'User-Agent': 'pareshauchdadiya05@gmail.com',
-        'Authorization-Key': USAJOBS_API_KEY
-    }
+    headers = _get_usajobs_headers()
 
     # Fetch more than needed so we have room to filter
     fetch_count = min(results_per_page * 3, 500)
@@ -119,33 +145,47 @@ def fetch_usajobs(keyword, location="remote", results_per_page=5):
         # Sort by score descending
         relevant.sort(key=lambda x: x[1], reverse=True)
 
-        # Prefer jobs where all keyword words appear in the title (score >= 40).
-        # Only fall back to partial matches if there are fewer than requested.
+        # Prefer keyword-ranked jobs, then pad with raw API results so valid
+        # USAJobs matches are not hidden by our local ranking heuristic.
         high_quality = [(job, score) for job, score in relevant if score >= 40]
         if high_quality:
-            top_jobs = [job for job, _ in high_quality[:results_per_page]]
+            ordered_jobs = [job for job, _ in high_quality]
+            ordered_jobs.extend(
+                job for job, _ in relevant
+                if job not in ordered_jobs
+            )
         else:
-            # No strong title match — use any partial match
-            top_jobs = [job for job, _ in relevant[:results_per_page]]
+            ordered_jobs = [job for job, _ in relevant]
+
+        ordered_jobs.extend(
+            job for job in job_items
+            if job not in ordered_jobs
+        )
+        top_jobs = ordered_jobs[:results_per_page]
 
         logger.info(f"Returning {len(top_jobs)} relevant job(s) after keyword filtering")
         return top_jobs
 
     except requests.exceptions.Timeout:
         logger.error("Request timed out while fetching jobs")
-        return []
+        raise USAJobsAPIError("USAJobs request timed out. Please try again.")
     except requests.exceptions.HTTPError as e:
-        logger.error(f"HTTP error occurred: {e}")
-        return []
+        status_code = e.response.status_code if e.response is not None else "unknown"
+        logger.error(f"HTTP error occurred while fetching USAJobs: {e}")
+        if status_code in (401, 403):
+            raise USAJobsAPIError(
+                "USAJobs rejected the request. Check that USAJOBS_API_KEY is set correctly in production."
+            ) from e
+        raise USAJobsAPIError(f"USAJobs API returned HTTP {status_code}.") from e
     except requests.exceptions.RequestException as e:
         logger.error(f"Request error occurred: {e}")
-        return []
+        raise USAJobsAPIError("Could not connect to USAJobs API.") from e
     except ValueError as e:
         logger.error(f"JSON decode error: {e}")
-        return []
+        raise USAJobsAPIError("USAJobs API returned an invalid response.") from e
     except Exception as e:
         logger.error(f"Unexpected error occurred: {e}")
-        return []
+        raise
 
 if __name__ == "__main__":
     jobs = fetch_usajobs("Software Development", location="San Antonio", results_per_page=10)

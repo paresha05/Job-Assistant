@@ -8,13 +8,17 @@ if [ ! -f .env ]; then
     echo "❌ .env file not found!"
     echo "Please create a .env file with your API keys for production:"
     echo "  USAJOBS_API_KEY=your_production_key"
-    echo "  GEMINI_API_KEY=your_production_key"
+    echo "  CEREBRAS_API_KEY=your_production_key"
     exit 1
 fi
 
 # Validate environment variables
-if ! grep -q "USAJOBS_API_KEY=.*[^[:space:]]" .env || ! grep -q "GEMINI_API_KEY=.*[^[:space:]]" .env; then
+if ! grep -q "USAJOBS_API_KEY[[:space:]]*=[[:space:]]*.*[^[:space:]]" .env || \
+   ! grep -q "CEREBRAS_API_KEY[[:space:]]*=[[:space:]]*.*[^[:space:]]" .env; then
     echo "❌ API keys not properly configured in .env file"
+    echo "Required:"
+    echo "  USAJOBS_API_KEY=your_production_key"
+    echo "  CEREBRAS_API_KEY=your_production_key"
     exit 1
 fi
 
