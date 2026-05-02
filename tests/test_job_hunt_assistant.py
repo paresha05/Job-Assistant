@@ -177,6 +177,12 @@ class TestOrchestrator(unittest.TestCase):
 
 class TestConfigValidation(unittest.TestCase):
     """Test cases for configuration validation"""
+
+    def test_cerebras_default_model(self):
+        """Test Cerebras defaults to a currently supported public model"""
+        from utils.config import CEREBRAS_MODEL
+
+        self.assertEqual(CEREBRAS_MODEL, "llama3.1-8b")
     
     def test_config_validation(self):
         """Test that config validation works"""

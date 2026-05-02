@@ -103,6 +103,7 @@ docker-compose build --no-cache
    USAJOBS_API_KEY=your_usajobs_api_key
    USAJOBS_USER_AGENT=email_used_for_usajobs_api_key
    CEREBRAS_API_KEY=your_cerebras_api_key
+   CEREBRAS_MODEL=llama3.1-8b
    ```
    For Docker/production, keep this exact `KEY=value` format with no spaces around `=`.
 
@@ -117,6 +118,7 @@ docker-compose build --no-cache
 ### Cerebras API Key
 1. Create a Cerebras API key from your Cerebras account.
 2. Add it to your `.env` file as `CEREBRAS_API_KEY`.
+3. Optionally set `CEREBRAS_MODEL`; the default is `llama3.1-8b`.
 
 ## Usage
 
@@ -165,6 +167,7 @@ The application is containerized with the following components:
 - `USAJOBS_API_KEY`: Your USAJobs.gov API key
 - `USAJOBS_USER_AGENT`: Email used to request your USAJobs.gov API key
 - `CEREBRAS_API_KEY`: Your Cerebras API key
+- `CEREBRAS_MODEL`: Cerebras model ID, defaults to `llama3.1-8b`
 
 ### Ports
 - **8501**: Streamlit application (development)
@@ -178,6 +181,7 @@ The system uses environment variables for configuration:
 - `USAJOBS_API_KEY`: Your USAJobs.gov API key
 - `USAJOBS_USER_AGENT`: Email used to request your USAJobs.gov API key
 - `CEREBRAS_API_KEY`: Your Cerebras API key
+- `CEREBRAS_MODEL`: Cerebras model ID, defaults to `llama3.1-8b`
 
 ## Output Files
 

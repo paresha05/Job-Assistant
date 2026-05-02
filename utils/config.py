@@ -11,10 +11,11 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 CEREBRAS_API_KEY = os.getenv("CEREBRAS_API_KEY")
+CEREBRAS_MODEL = os.getenv("CEREBRAS_MODEL", "llama3.1-8b")
 
 def get_available_llm_config():
     if CEREBRAS_API_KEY:
-        return ("cerebras", CEREBRAS_API_KEY, "llama-3.3-70b")
+        return ("cerebras", CEREBRAS_API_KEY, CEREBRAS_MODEL)
     elif GROQ_API_KEY:
         return ("groq", GROQ_API_KEY, "llama-3.3-70b-versatile")
     elif OPENAI_API_KEY:
