@@ -2,7 +2,6 @@ import streamlit as st
 import logging
 from orchestrator import run_pipeline
 from usajobs_api import USAJobsAPIError, fetch_usajobs
-from utils.tracking import get_applications_summary
 from utils.resume_parser import parse_resume, check_resume_relevance
 from utils.config import get_llm_string
 
@@ -43,22 +42,6 @@ st.markdown("""
 Use AI agents to analyze jobs, tailor your resume, and write outreach messages — all from one interface.
 *Specifically designed for USAJobs.gov federal positions.*
 """)
-
-# Sidebar with application summary
-with st.sidebar:
-    st.header("Application Summary")
-    try:
-        summary = get_applications_summary()
-        if summary:
-            st.metric("Total Applications", summary.get("total_applications", 0))
-            st.metric("Unique Agencies", summary.get("unique_agencies", 0))
-            if summary.get("last_application"):
-                st.write(f"**Last Applied:** {summary['last_application']}")
-        else:
-            st.info("No applications logged yet")
-    except Exception as e:
-        st.error("Error loading application summary")
-        logger.error(f"Error in sidebar summary: {e}")
 
 # Main interface
 col1, col2 = st.columns(2)
